@@ -32,9 +32,8 @@ function loopFail() { // Loop until connection succeeds, then switch to loopSucc
     ping.sys.probe(host, function(isAlive) { // Ping host
       if (isAlive) {
         body.value1 = "Modem is back online"; // Change value of the first key in the webhook JSON body object
-        console.log(body.value1);
         body.value2 = 'Downtime was ' + shortEnglishHumanizer(moment.duration(moment().diff(moment(mark)))); // Change value of the second key in the webhook JSON body object
-        console.log(body.value2);
+        console.error(moment().format(), body.value1 + ', ' + body.value2);
         mark = moment();
         postJson(url, body, function(err, result) {}); // Trigger IFTTT webhook
         loopSuccess();
@@ -54,9 +53,8 @@ function loopSuccess() { // Loop until connection fails, then switch to loopFail
         setTimeout(loopSuccess, (30 * 1000)); // Run loopSuccess in 30s
       } else {
         body.value1 = "Modem is not responding"; // Change value of the first key in the webhook JSON body object
-        console.log(body.value1);
         body.value2 = 'Uptime was ' + shortEnglishHumanizer(moment.duration(moment().diff(moment(mark)))); // Change value of the second key in the webhook JSON body object
-        console.log(body.value2);
+        console.error(moment().format(), body.value1 + ', ' + body.value2);
         mark = moment();
         postJson(url, body, function(err, result) {}); // Trigger IFTTT webhook
         loopFail();
