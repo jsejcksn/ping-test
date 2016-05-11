@@ -4,8 +4,10 @@
   "description": "Check if a an address is reachable and trigger webhook on state change",
   "main": "ping-test.js",
   "dependencies": {
-    "post-json": "^0.3.1",
-    "ping": "^0.1.10"
+    "humanize-duration": "^3.7.1",
+    "moment": "^2.13.0",
+    "ping": "^0.1.10",
+    "post-json": "^0.3.1"
   },
   "devDependencies": {},
   "scripts": {
