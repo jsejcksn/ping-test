@@ -7,7 +7,25 @@ var data = require('./private.js'),
 var hosts = [data.server],
   url = data.url.jesse,
   body = {},
-  mark = moment();
+  mark = moment(),
+  shortEnglishHumanizer = humanizeDuration.humanizer({
+    language: 'shortEn',
+    languages: {
+      shortEn: {
+        y: function() { return 'y'; },
+        mo: function() { return 'mo'; },
+        w: function() { return 'w'; },
+        d: function() { return 'd'; },
+        h: function() { return 'h'; },
+        m: function() { return 'm'; },
+        s: function() { return 's'; },
+        ms: function() { return 'ms'; },
+      }
+    },
+    delimiter: ' ',
+    round: true,
+    spacer: ''
+  });
 
 function loopFail() { // Loop until connection succeeds, then switch to loopSuccess
   hosts.forEach(function(host) {
@@ -15,7 +33,7 @@ function loopFail() { // Loop until connection succeeds, then switch to loopSucc
       if (isAlive) {
         body.value1 = "Modem is back online"; // Change value of the first key in the webhook JSON body object
         console.log(body.value1);
-        body.value2 = 'Downtime was ' + humanizeDuration(moment.duration(moment().diff(moment(mark)))); // Change value of the second key in the webhook JSON body object
+        body.value2 = 'Downtime was ' + shortEnglishHumanizer(moment.duration(moment().diff(moment(mark)))); // Change value of the second key in the webhook JSON body object
         console.log(body.value2);
         mark = moment();
         postJson(url, body, function(err, result) {}); // Trigger IFTTT webhook
@@ -37,7 +55,7 @@ function loopSuccess() { // Loop until connection fails, then switch to loopFail
       } else {
         body.value1 = "Modem is not responding"; // Change value of the first key in the webhook JSON body object
         console.log(body.value1);
-        body.value2 = 'Uptime was ' + humanizeDuration(moment.duration(moment().diff(moment(mark)))); // Change value of the second key in the webhook JSON body object
+        body.value2 = 'Uptime was ' + shortEnglishHumanizer(moment.duration(moment().diff(moment(mark)))); // Change value of the second key in the webhook JSON body object
         console.log(body.value2);
         mark = moment();
         postJson(url, body, function(err, result) {}); // Trigger IFTTT webhook
