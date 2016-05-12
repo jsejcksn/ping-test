@@ -2,7 +2,8 @@ var moment = require('moment'),
   humanizeDuration = require('humanize-duration');
 
 var mark = moment(),
-  mark2 = (365.25 * 24 * 60 * 60 * 1000) + (39.5 * 24 * 60 * 60 * 1000) + (17500);
+  mark2 = (1 * (365.25 * 24 * 60 * 60 * 1000)) + (1 * (30.4375 * 24 * 60 * 60 * 1000)) + (1 * (7 * 24 * 60 * 60 * 1000)) + (1 * (24 * 60 * 60 * 1000)) + (1 * (60 * 60 * 1000)) + (1 * (60 * 1000)) + (1 * (1000)),
+  mark3 = (3 * (365.25 * 24 * 60 * 60 * 1000)) + (10 * (30.4375 * 24 * 60 * 60 * 1000)) + (2 * (7 * 24 * 60 * 60 * 1000)) + (21 * (24 * 60 * 60 * 1000)) + (19 * (60 * 60 * 1000)) + (45 * (60 * 1000)) + (17.5 * (1000));
 var shortEnglishHumanizer = humanizeDuration.humanizer({
   language: 'shortEn',
   languages: {
@@ -19,7 +20,8 @@ var shortEnglishHumanizer = humanizeDuration.humanizer({
   },
   delimiter: ' ',
   round: true,
-  spacer: ''
+  spacer: '',
+  units: ['y', 'mo', 'w', 'd', 'h', 'm']
 });
 
 function display() {
@@ -28,4 +30,7 @@ function display() {
 
 console.log(humanizeDuration(mark2));
 console.log(shortEnglishHumanizer(mark2));
-setTimeout(display, 5230); // Should log '5s'
+console.log(humanizeDuration(mark3));
+console.log(shortEnglishHumanizer(mark3));
+setTimeout(display, 5230); // Should log '0m'
+// setTimeout(display, 65230); // Should log '1m'
