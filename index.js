@@ -24,7 +24,8 @@ var hosts = [data.server],
     },
     delimiter: ' ',
     round: true,
-    spacer: ''
+    spacer: '',
+    units: ['y', 'mo', 'w', 'd', 'h', 'm']
   });
 
 function loopFail() { // Loop until connection succeeds, then switch to loopSuccess
