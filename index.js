@@ -25,7 +25,7 @@ var privateData = require('./private.js'),
   });
 
 // Variables
-var hosts = [privateData.server], // This array contains only one object because this app is intended for pinging only one device
+var host = privateData.server,
   webhook = {
     'url': privateData.url, // Webhook URL
     'body': {} // POST body for webhook
@@ -36,44 +36,40 @@ var hosts = [privateData.server], // This array contains only one object because
 isDown(); // Initiate with the assumption that the device is offline; causes first webhook event to be about device being online
 
 function isDown() { // Loop until connection succeeds, then switch to isUp
-  hosts.forEach(function(host) {
-    ping.sys.probe(host, function(isAlive) { // Ping host
-      if (isAlive) {
-        loopCount++;
-        if (loopCount > 1) { // Double-check before taking action
-          webhook.body.value1 = "Modem is back online"; // Change value of the first key in the webhook JSON body object
-          webhook.body.value2 = 'Downtime was ' + shortEnglishHumanizer(moment.duration(moment().diff(moment(mark)))); // Change value of the second key in the webhook JSON body object
-          logPost();
-          isUp();
-        } else {
-          isDown();
-        }
+  ping.sys.probe(host, function(isAlive) { // Ping host
+    if (isAlive) {
+      loopCount++;
+      if (loopCount > 1) { // Double-check before taking action
+        webhook.body.value1 = "Modem is back online"; // Change value of the first key in the webhook JSON body object
+        webhook.body.value2 = 'Downtime was ' + shortEnglishHumanizer(moment.duration(moment().diff(moment(mark)))); // Change value of the second key in the webhook JSON body object
+        logPost();
+        isUp();
       } else {
-        console.log(moment().format() + ' ' + host + ' did not respond');
-        setTimeout(isDown, (30 * 1000)); // Run isDown in 30s
+        isDown();
       }
-    });
+    } else {
+      console.log(moment().format() + ' ' + host + ' did not respond');
+      setTimeout(isDown, (30 * 1000)); // Run isDown in 30s
+    }
   });
 }
 
 function isUp() { // Loop until connection fails, then switch to isDown
-  hosts.forEach(function(host) {
-    ping.sys.probe(host, function(isAlive) { // Ping host
-      if (isAlive) {
-        console.log(moment().format() + ' ' + host + ' is online');
-        setTimeout(isUp, (30 * 1000)); // Run isUp in 30s
+  ping.sys.probe(host, function(isAlive) { // Ping host
+    if (isAlive) {
+      console.log(moment().format() + ' ' + host + ' is online');
+      setTimeout(isUp, (30 * 1000)); // Run isUp in 30s
+    } else {
+      loopCount++;
+      if (loopCount > 1) { // Double-check before taking action
+        webhook.body.value1 = "Modem is not responding"; // Change value of the first key in the webhook JSON body object
+        webhook.body.value2 = 'Uptime was ' + shortEnglishHumanizer(moment.duration(moment().diff(moment(mark)))); // Change value of the second key in the webhook JSON body object
+        logPost();
+        isDown();
       } else {
-        loopCount++;
-        if (loopCount > 1) { // Double-check before taking action
-          webhook.body.value1 = "Modem is not responding"; // Change value of the first key in the webhook JSON body object
-          webhook.body.value2 = 'Uptime was ' + shortEnglishHumanizer(moment.duration(moment().diff(moment(mark)))); // Change value of the second key in the webhook JSON body object
-          logPost();
-          isDown();
-        } else {
-          isUp();
-        }
+        isUp();
       }
-    });
+    }
   });
 }
 
