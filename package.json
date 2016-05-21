@@ -1,6 +1,6 @@
 {
   "name": "ping-test",
-  "version": "0.9.4",
+  "version": "0.9.5",
   "description": "Test if a device is reachable; log and trigger webhook on state change",
   "main": "index.js",
   "dependencies": {
