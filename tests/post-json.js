@@ -1,7 +1,7 @@
-var data = require('../private.js'),
+var privateData = require('../private.js'),
   postJson = require('post-json');
 
-var url = data.url.jesseTest,
+var url = privateData.url.jesseTest,
   body = {};
 
 body.value1 = "hola"; // Change value of one of the keys in the JSON body object
