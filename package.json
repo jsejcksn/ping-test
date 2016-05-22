@@ -4,7 +4,7 @@
   "description": "Test if a device is reachable; log and trigger webhook on state change",
   "main": "index.js",
   "dependencies": {
-    "humanize-duration": "^3.7.1",
+    "humanize-duration": "^3.8.0",
     "moment": "^2.13.0",
     "ping": "^0.1.10",
     "post-json": "^0.3.1"
