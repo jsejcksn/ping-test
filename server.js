@@ -76,7 +76,7 @@ function isUp () { // Loop until connection fails, then switch to isDown
 function logPost () {
   mark = moment(); // Reset moment for getting diffs
   console.error(moment().format(), webhook.body.value1 + ', ' + webhook.body.value2); // Log status change
-  postJson(webhook.url, webhook.body, function (err, result) {  // Trigger webhook
+  postJson(webhook.url, webhook.body, function (err, result) { // Trigger webhook
     if (err) {
       console.error(err);
     }
