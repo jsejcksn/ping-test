@@ -1,7 +1,7 @@
 {
   "name": "ping-test",
-  "version": "0.9.3",
-  "description": "Check if an address is reachable and trigger webhook on state change",
+  "version": "0.9.5",
+  "description": "Test if a device is reachable; log and trigger webhook on state change",
   "main": "index.js",
   "dependencies": {
     "humanize-duration": "^3.7.1",

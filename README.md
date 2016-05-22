@@ -1,2 +1,2 @@
 # ping-test
-Check if an address is reachable and trigger webhook on state change
+Test if a device is reachable; log and trigger webhook on state change
