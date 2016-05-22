@@ -1,6 +1,6 @@
 {
   "name": "ping-test",
-  "version": "0.9.5",
+  "version": "0.9.6",
   "description": "Test if a device is reachable; log and trigger webhook on state change",
   "main": "index.js",
   "dependencies": {
@@ -9,9 +9,32 @@
     "ping": "^0.1.10",
     "post-json": "^0.3.1"
   },
-  "devDependencies": {},
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "devDependencies": {
+    "semistandard": "^8.0.0"
   },
-  "author": "Jesse Jackson"
+  "scripts": {
+    "start": "server.js",
+    "test": "semistandard"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jsejcksn/ping-test.git"
+  },
+  "keywords": [
+    "ping-test",
+    "ping",
+    "test",
+    "server",
+    "internet",
+    "connectivity",
+    "connection",
+    "downtime",
+    "uptime"
+  ],
+  "author": "Jesse Jackson",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jsejcksn/ping-test/issues"
+  },
+  "homepage": "https://github.com/jsejcksn/ping-test#readme"
 }
