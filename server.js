@@ -36,9 +36,12 @@ var markPrecise = process.hrtime();
 var offset;
 var offsetPrecise = process.hrtime(markPrecise);
 var offsetReadable;
+var status = false;
 
+// Execute
 isDown(); // Initiate with the assumption that the device is offline; causes first webhook event to be about device being online
 
+// Functions
 function isDown () { // Loop until connection succeeds, then switch to isUp
   ping.sys.probe(host, function (isAlive) { // Ping host
     if (isAlive) {
@@ -47,13 +50,13 @@ function isDown () { // Loop until connection succeeds, then switch to isUp
         timeOffset();
         webhook.body.value1 = 'Modem is back online'; // Change value of the first key in the webhook JSON body object
         webhook.body.value2 = 'Downtime was ' + offsetReadable; // Change value of the second key in the webhook JSON body object
-        logPost();
+        logChange();
         isUp();
       } else {
         isDown();
       }
     } else {
-      console.log(moment().format() + ' ' + host + ' did not respond');
+      logStatus();
       setTimeout(isDown, (30 * 1000)); // Run isDown in 30s
     }
   });
@@ -62,7 +65,7 @@ function isDown () { // Loop until connection succeeds, then switch to isUp
 function isUp () { // Loop until connection fails, then switch to isDown
   ping.sys.probe(host, function (isAlive) { // Ping host
     if (isAlive) {
-      console.log(moment().format() + ' ' + host + ' is online');
+      logStatus();
       setTimeout(isUp, (30 * 1000)); // Run isUp in 30s
     } else {
       loopCount++;
@@ -70,7 +73,7 @@ function isUp () { // Loop until connection fails, then switch to isDown
         timeOffset();
         webhook.body.value1 = 'Modem is not responding'; // Change value of the first key in the webhook JSON body object
         webhook.body.value2 = 'Uptime was ' + offsetReadable; // Change value of the second key in the webhook JSON body object
-        logPost();
+        logChange();
         isDown();
       } else {
         isUp();
@@ -79,10 +82,24 @@ function isUp () { // Loop until connection fails, then switch to isDown
   });
 }
 
-function logPost () {
+function logChange () {
   mark = moment(); // Reset moment for getting diffs
   markPrecise = process.hrtime();
-  console.error(moment().format(), webhook.body.value1 + ', ' + webhook.body.value2); // Log status change
+  status = !status;
+  var msg = {
+    'dateFull': moment(mark).format(),
+    'dateUnix': +moment(mark),
+    'diffClock': offset,
+    'diffPrecise': offsetPrecise,
+    'diffReadable': offsetReadable,
+    'host': host
+  };
+  if (status) {
+    msg.reachable = true;
+  } else {
+    msg.reachable = false;
+  }
+  console.error(JSON.stringify(msg) + ','); // Log status change
   postJson(webhook.url, webhook.body, function (err, result) { // Trigger webhook
     if (err) {
       console.error(err);
@@ -91,8 +108,24 @@ function logPost () {
   loopCount = 0;
 }
 
+function logStatus () {
+  var timeStamp = moment();
+  var msg = {
+    'dateFull': moment(timeStamp).format(),
+    'dateUnix': +moment(timeStamp),
+    'host': host
+  };
+  if (status) {
+    msg.reachable = true;
+  } else {
+    msg.reachable = false;
+  }
+  console.log(JSON.stringify(msg) + ',');
+  loopCount = 0;
+}
+
 function timeOffset () {
-  offset = moment.duration(moment().diff(moment(mark)));
+  offset = moment().diff(moment(mark));
   offsetPrecise = process.hrtime(markPrecise);
   offsetReadable = shortEnglishHumanizer(offset);
 }
