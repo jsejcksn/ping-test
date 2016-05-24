@@ -1,8 +1,11 @@
 var moment = require('moment');
 
-var dateFull = moment().format();
+var now = moment();
+var dateFull = moment(now).format();
 
 console.log({
+  'dateUnix': +moment(now),
+  'dateFull': dateFull,
   'dateYear': +dateFull.slice(0, 4),
   'dateMonth': +dateFull.slice(5, 7),
   'dateDay': +dateFull.slice(8, 10),
