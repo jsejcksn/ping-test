@@ -30,13 +30,14 @@ var webhook = {
   'url': privateData.url, // Webhook URL
   'body': {} // POST body for webhook
 };
+var dateSystemStatus = +moment();
 var loopCount = 0;
-var mark = moment(); // Set initial moment for getting diffs
+var mark = dateSystemStatus; // Set initial moment for getting diffs
 var markPrecise = process.hrtime();
 var offset;
-var offsetPrecise = process.hrtime(markPrecise);
+var offsetPrecise;
 var offsetReadable;
-var status = false;
+var status = false; // Set initial server 'reachable' status to false/offline
 
 // Execute
 isDown(); // Initiate with the assumption that the device is offline; causes first webhook event to be about device being online
@@ -83,16 +84,16 @@ function isUp () { // Loop until connection fails, then switch to isDown
 }
 
 function logChange () {
-  mark = moment(); // Reset moment for getting diffs
+  mark = +moment(); // Reset moment for getting diffs
   markPrecise = process.hrtime();
-  status = !status;
+  status = !status; // Toggle server 'reachable' status
   var msg = {
     'dateFull': moment(mark).format(),
-    'dateUnix': +moment(mark),
+    'dateUnix': mark,
     'diffClock': offset,
     'diffPrecise': offsetPrecise,
-    'diffReadable': offsetReadable,
-    'host': host
+    'diffReadable': offsetReadable
+  // 'host': host
   };
   if (status) {
     msg.reachable = true;
@@ -109,23 +110,26 @@ function logChange () {
 }
 
 function logStatus () {
-  var timeStamp = moment();
-  var msg = {
-    'dateFull': moment(timeStamp).format(),
-    'dateUnix': +moment(timeStamp),
-    'host': host
-  };
-  if (status) {
-    msg.reachable = true;
-  } else {
-    msg.reachable = false;
+  var timeStamp = +moment();
+  if (timeStamp > (dateSystemStatus + 86400000)) { // Greater than at least 24 hours
+    dateSystemStatus = timeStamp;
+    var msg = {
+      'dateFull': moment(timeStamp).format()
+    // 'dateUnix': +moment(timeStamp),
+    // 'host': host
+    };
+    if (status) {
+      msg.reachable = true;
+    } else {
+      msg.reachable = false;
+    }
+    console.log(JSON.stringify(msg) + ',');
   }
-  console.log(JSON.stringify(msg) + ',');
   loopCount = 0;
 }
 
 function timeOffset () {
   offset = moment().diff(moment(mark));
   offsetPrecise = process.hrtime(markPrecise);
-  offsetReadable = shortEnglishHumanizer(offset);
+  offsetReadable = shortEnglishHumanizer(offset); // Round to nearest minute and display with units
 }
