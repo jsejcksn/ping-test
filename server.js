@@ -49,7 +49,8 @@ function isDown () { // Loop until connection succeeds, then switch to isUp
       loopCount++;
       if (loopCount > 1) { // Double-check before taking action
         timeOffset();
-        webhook.body.value1 = 'Modem is back online (Downtime was ' + offsetReadable + ')'; // Change value of the first key in the webhook JSON body object
+        webhook.body.value1 = 'Modem is back online'; // Change value of the first key in the webhook JSON body object
+        webhook.body.value2 = 'Downtime was ' + offsetReadable; // Change value of the second key in the webhook JSON body object
         logChange();
         isUp();
       } else {
@@ -71,7 +72,8 @@ function isUp () { // Loop until connection fails, then switch to isDown
       loopCount++;
       if (loopCount > 1) { // Double-check before taking action
         timeOffset();
-        webhook.body.value1 = 'Modem is back online (Uptime was ' + offsetReadable + ')'; // Change value of the first key in the webhook JSON body object
+        webhook.body.value1 = 'Modem is not responding'; // Change value of the first key in the webhook JSON body object
+        webhook.body.value2 = 'Uptime was ' + offsetReadable; // Change value of the second key in the webhook JSON body object
         logChange();
         isDown();
       } else {
@@ -99,6 +101,7 @@ function logChange () {
     msg.reachable = false;
   }
   console.error(JSON.stringify(msg) + ','); // Log status change
+  webhook.body.value3 = moment(+moment() - 21600000).format('D MMM HH:mm') + ' CST'; // Change value of the third key in the webhook JSON body object
   postJson(webhook.url, webhook.body, function (err, result) { // Trigger webhook
     if (err) {
       console.error(err);
